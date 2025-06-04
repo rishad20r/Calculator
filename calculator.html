@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pro Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    #cal-body {
+      background: #2c3e50;
+      border-radius: 15px;
+      padding: 20px;
+      width: 100%;
+      max-width: 350px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid #34495e;
+    }
+
+    .input {
+      background: #34495e;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border: 1px solid #4a5f7a;
+    }
+
+    .input #display {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 28px;
+      font-weight: 400;
+      text-align: right;
+      outline: none;
+      width: 100%;
+      font-family: 'Courier New', monospace;
+    }
+
+    .history {
+      font-size: 12px;
+      opacity: 0.7;
+      text-align: right;
+      display: none;
+      white-space: pre-line;
+      color: #bdc3c7;
+      margin-bottom: 5px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .buttons button {
+  width: 60px;
+  height: 60px;
+  font-size: 18px;
+  font-weight: 600;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: white;
+  background: linear-gradient(145deg, #3c4057, #2e3245);
+  box-shadow: inset -2px -2px 5px rgba(255,255,255,0.1),
+              inset 2px 2px 5px rgba(0,0,0,0.2),
+              0 4px 8px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+}
+
+/* Round hover effects with custom neon glow per type */
+.buttons button:hover {
+  transform: translateY(-3px);
+}
+
+/* Individual neon glow per button type */
+.buttons button.clear:hover {
+  box-shadow: 0 0 12px #ff4c4c, 0 0 24px #ff4c4c;
+}
+
+.buttons button.delete:hover {
+  box-shadow: 0 0 12px #ffa500, 0 0 24px #ffa500;
+}
+
+.buttons button.operator:hover {
+  box-shadow: 0 0 12px #3498db, 0 0 24px #3498db;
+}
+
+.buttons button.equal:hover {
+  box-shadow: 0 0 12px #2ecc71, 0 0 24px #2ecc71;
+}
+
+.buttons button.history-btn:hover {
+  box-shadow: 0 0 12px #9b59b6, 0 0 24px #9b59b6;
+}
+
+/* Pressed effect */
+.buttons button:active {
+  transform: scale(0.95);
+}
+
+/* Keep history button rectangular and styled like before */
+.buttons button.history-btn {
+  border-radius: 12px;
+  width: 100%;
+  height: 50px;
+  background: #9b59b6;
+  color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  font-size: 16px;
+}
+
+
+    /* General Neon Hover/Active */
+    .buttons button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 10px #00ffe7, 0 0 20px #00ffe7, 0 0 30px #00ffe7;
+    }
+
+    .buttons button:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 8px #00ffe7, 0 0 16px #00ffe7;
+    }
+
+    /* Operator buttons */
+    .buttons button.operator {
+      background: #3498db;
+    }
+    .buttons button.operator:hover {
+      box-shadow: 0 0 10px #3498db, 0 0 20px #3498db, 0 0 30px #3498db;
+    }
+
+    /* Clear button */
+    .buttons button.clear {
+      background: #e74c3c;
+    }
+    .buttons button.clear:hover {
+      box-shadow: 0 0 10px #e74c3c, 0 0 20px #e74c3c, 0 0 30px #e74c3c;
+    }
+
+    /* Delete button */
+    .buttons button.delete {
+      background: #f39c12;
+    }
+    .buttons button.delete:hover {
+      box-shadow: 0 0 10px #f39c12, 0 0 20px #f39c12, 0 0 30px #f39c12;
+    }
+
+    /* Equals button */
+    .buttons button.equal {
+      background: #2ecc71;
+    }
+    .buttons button.equal:hover {
+      box-shadow: 0 0 10px #2ecc71, 0 0 20px #2ecc71, 0 0 30px #2ecc71;
+    }
+
+    /* History button */
+    .buttons button.history-btn {
+      background: #9b59b6;
+      border-radius: 12px;
+    }
+    .buttons button.history-btn:hover {
+      box-shadow: 0 0 10px #9b59b6, 0 0 20px #9b59b6, 0 0 30px #9b59b6;
+    }
+
+    /* Special layout for better alignment */
+    .row-1 {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 400px) {
+      #cal-body {
+        padding: 15px;
+        max-width: 95%;
+      }
+      
+      .input {
+        min-height: 70px;
+        padding: 12px;
+      }
+      
+      .input #display {
+        font-size: 24px;
+      }
+      
+      .buttons button {
+        height: 55px;
+        font-size: 16px;
+      }
+      
+      .buttons {
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="cal-body">
+    <div class="input">
+      <div class="history" id="history"></div>
+      <input type="text" id="display" readonly placeholder="0" />
+    </div>
+
+    <div class="buttons">
+      <button onclick="clearDisplay()" class="clear">C</button>
+      <button onclick="deleteLast()" class="delete">⌫</button>
+      <button onclick="press('(')" class="operator">(</button>
+      <button onclick="press(')')" class="operator">)</button>
+
+      <button onclick="press('7')">7</button>
+      <button onclick="press('8')">8</button>
+      <button onclick="press('9')">9</button>
+      <button onclick="press('/')" class="operator">÷</button>
+
+      <button onclick="press('4')">4</button>
+      <button onclick="press('5')">5</button>
+      <button onclick="press('6')">6</button>
+      <button onclick="press('*')" class="operator">×</button>
+
+      <button onclick="press('1')">1</button>
+      <button onclick="press('2')">2</button>
+      <button onclick="press('3')">3</button>
+      <button onclick="press('-')" class="operator">−</button>
+
+      <button onclick="press('0')">0</button>
+      <button onclick="press('.')">.</button>
+      <button onclick="calculate()" class="equal">=</button>
+      <button onclick="press('+')" class="operator">+</button>
+
+      <button onclick="toggleHistory()" class="history-btn" style="grid-column: 1 / -1;">History</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const historyBox = document.getElementById('history');
+    let resetNext = false;
+    let historyList = [];
+
+    function press(val) {
+      if (resetNext) {
+        display.value = '';
+        resetNext = false;
+      }
+
+      let displayVal = val;
+      if (val === '*') displayVal = '×';
+      if (val === '/') displayVal = '÷';
+      if (val === '-') displayVal = '−';
+
+      if (display.value === '0' && val !== '.') {
+        display.value = val;
+      } else {
+        display.value += val;
+      }
+    }
+
+    function calculate() {
+      try {
+        const expression = display.value
+          .replace(/×/g, '*')
+          .replace(/÷/g, '/')
+          .replace(/−/g, '-');
+        const result = eval(expression);
+        if (!isFinite(result)) throw new Error('Invalid calculation');
+        historyList.unshift(`${display.value} = ${result}`);
+        if (historyList.length > 10) historyList.pop();
+        historyBox.innerText = historyList.slice(0, 5).join('\n');
+        display.style.opacity = '0.3';
+        setTimeout(() => {
+          display.value = result.toString();
+          display.style.opacity = '1';
+        }, 150);
+        resetNext = true;
+      } catch {
+        display.value = 'Error';
+        setTimeout(() => {
+          display.value = '';
+        }, 1500);
+        resetNext = true;
+      }
+    }
+
+    function clearDisplay() {
+      display.style.opacity = '0.3';
+      setTimeout(() => {
+        display.value = '';
+        display.style.opacity = '1';
+      }, 150);
+      resetNext = false;
+      historyBox.style.display = 'none';
+    }
+
+    function toggleHistory() {
+      if (historyList.length === 0) {
+        historyBox.innerText = 'No calculations yet';
+      }
+      historyBox.style.display = historyBox.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function deleteLast() {
+      if (!resetNext && display.value.length > 0) {
+        display.value = display.value.slice(0, -1);
+      }
+    }
+
+    display.value = '';
+
+    document.addEventListener('keydown', (e) => {
+      const key = e.key;
+      if ((/[0-9+\-*/().]/).test(key)) {
+        press(key);
+      } else if (key === 'Enter' || key === '=') {
+        e.preventDefault();
+        calculate();
+      } else if (key === 'Backspace') {
+        e.preventDefault();
+        deleteLast();
+      } else if (key.toLowerCase() === 'c' || key === 'Escape') {
+        clearDisplay();
+      } else if (key.toLowerCase() === 'h') {
+        toggleHistory();
+      }
+    });
+  </script>
+</body>
+</html>
